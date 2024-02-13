@@ -12,7 +12,7 @@ class Graph{
     } 
 
     addEdge(vertex1, vertex2, weight) {
-        this.edges.push([[vertex1, vertex2], [weight]]);
+        this.edges.push([vertex1, vertex2, weight]);
     }
 }
 
@@ -37,31 +37,53 @@ graph.addEdge(3,4,2);
 graph.addEdge(5,6,5);
 graph.addEdge(5,4,4);
 
-let visited = new Array(graph.vertices.length).fill(false)
+let count = 0
 
-let adjecent = 0
-let minWeihtEdgeIndex = 0
-let minWeight = graph.edges[0][2]
-let i = 0
-
-console.log(graph.edges[0][2]);
-
-
-
-function KruskalaSearch(graph, start, visited, fillingGraph) {
-    adjecent++;
-    i = 0
-    while(adjecent < graph.vertices.length){
-        if(graph.edges[i] != null && graph.edges[i][0][0].includes(start) && graph.edges[i][0][1].includes(adjecent)){
-            if(start == 0 && !visited[start]){
-                continue
-            }
-            if(graph.edges[i][1] < minWeight){
-                graph.edges[i][1] = minWeight
+function SortByWeiht(graph){
+    for(let i = 1; i < graph.edges.length; i++){
+        for(let j = i; j > 0; j--){
+            count++
+            if(graph.edges[j][2] < graph.edges[j-1][2]){
+                const temp = graph.edges[j];
+                graph.edges[j] = graph.edges[j-1];
+                graph.edges[j-1] = temp;
+            } else {
+                break;
             }
         }
     }
-
 }
 
-KruskalaSearch(graph, 0, visited, fillingGraph)
+SortByWeiht(graph)
+
+let visited = new Array(graph.vertices.length).fill(false)
+
+ let adjecent = 0
+ let i = 0
+ let end = graph.vertices.length - 1
+function KruskalaSearch(graph, visited){
+    while(!visited[end]){
+        count++
+        if(graph.edges[i] == undefined){
+            return
+        }
+        start = graph.edges[i][0];
+        adjecent = graph.edges[i][1]
+        if(visited[start] && visited[adjecent]){
+            i++
+            continue
+        }
+        fillingGraph.addEdge(start, adjecent, graph.edges[i][2])
+        i++
+        if(visited[start]){
+            visited[adjecent] = true
+        }
+        visited[start] = true
+        // KruskalaSearch(graph, visited)  Dont know for sure is it really neccessary to call recursive function
+    }
+}
+
+KruskalaSearch(graph, visited)
+
+console.log("filling graph: ", fillingGraph);
+console.log("count is: ", count);
